@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阿公阿嬤防詐補給站</title>
+    <!-- 引入 Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* 確保字體夠大適合長輩 */
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen pb-12">
+
+    <!-- 頂部大標題 -->
+    <header class="bg-blue-600 text-white text-center py-8 shadow-md">
+        <h1 class="text-4xl font-extrabold tracking-wider">👴 阿公阿嬤防詐補給站 👵</h1>
+        <p class="text-xl mt-2 text-blue-100">通識課防詐行動專案 - 簡單、字大、守護安全</p>
+    </header>
+
+    <!-- 功能分頁標籤 -->
+    <nav class="max-w-2xl mx-auto mt-6 px-4 flex gap-4">
+        <button id="btn-game" onclick="switchTab('game')" class="flex-1 py-4 text-2xl font-bold rounded-xl shadow-md transition bg-blue-500 text-white border-2 border-blue-600">
+            🎮 防詐挑戰賽
+        </button>
+        <button id="btn-check" onclick="switchTab('check')" class="flex-1 py-4 text-2xl font-bold rounded-xl shadow-md transition bg-white text-gray-700 border-2 border-gray-200 hover:bg-gray-50">
+            🔍 可疑網址檢查
+        </button>
+    </nav>
+
+    <main class="max-w-2xl mx-auto mt-6 px-4">
+        
+        <!-- ================= 分頁一：防詐挑戰賽 ================= -->
+        <section id="section-game" class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-sm font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-lg" id="game-progress">題目 1 / 3</span>
+                <span class="text-lg font-bold text-gray-500">得分：<span id="game-score" class="text-green-600 text-xl">0</span></span>
+            </div>
+
+            <!-- 模擬手機簡訊畫面 -->
+            <div class="bg-neutral-900 text-white rounded-2xl p-4 my-6 font-mono shadow-inner border-4 border-gray-700">
+                <div class="text-gray-400 text-sm border-b border-gray-700 pb-2 mb-2">💬 未知號碼 (簡訊通知)</div>
+                <p class="text-2xl leading-relaxed tracking-wide" id="question-text">
+                    【台灣電力公司】您本月電費已逾期，請盡速至 http://taipower-fee.xyz 繳費，否則將於明日斷電。
+                </p>
+            </div>
+
+            <!-- 抉擇按鈕 -->
+            <div class="flex flex-col gap-4 mt-8">
+                <button onclick="answerQuestion(true)" class="w-full py-5 bg-rose-500 hover:bg-rose-600 text-white text-3xl font-extrabold rounded-2xl shadow-lg transform active:scale-95 transition">
+                    🚨 這是詐騙！別點！
+                </button>
+                <button onclick="answerQuestion(false)" class="w-full py-5 bg-emerald-500 hover:bg-emerald-600 text-white text-3xl font-extrabold rounded-2xl shadow-lg transform active:scale-95 transition">
+                    重、要、通、知
+                </button>
+            </div>
+
+            <!-- 下一題按鈕（預設隱藏） -->
+            <div id="next-box" class="hidden mt-6 text-center">
+                <button onclick="nextQuestion()" class="px-8 py-3 bg-blue-600 text-white text-xl font-bold rounded-xl hover:bg-blue-700">
+                    下一題 ➔
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= 分頁二：可疑網址檢查 ================= -->
+        <section id="section-check" class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 hidden">
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-4 text-center">把不放心的網址貼過來</h2>
+            <p class="text-gray-500 text-center text-lg mb-6">收到奇怪的 LINE 連結或簡訊嗎？先檢查再點擊！</p>
+            
+            <div class="space-y-4">
+                <input type="text" id="url-input" placeholder="請在這裡長按【貼上】網址..." 
+                       class="w-full p-5 text-2xl border-4 border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500 placeholder-gray-400 font-mono">
+                
+                <button onclick="processCheckUrl()" class="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white text-3xl font-extrabold rounded-2xl shadow-lg">
+                    🎯 點我開始檢查
+                </button>
+            </div>
+
+            <!-- 檢查結果顯示區 -->
+            <div id="check-result" class="mt-8 hidden">
+                <!-- 動態注入結果 -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 遊戲結果大彈窗 (Modal) -->
+    <div id="result-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center border-4" id="modal-border">
+            <div class="text-7xl mb-4" id="modal-icon">🎉</div>
+            <h3 class="text-4xl font-black mb-4" id="modal-title">答對了！</h3>
+            <p class="text-2xl text-gray-600 leading-relaxed mb-6 text-left" id="modal-desc">
+                解析文案
+            </p>
+            <button onclick="closeModal()" class="w-full py-4 bg-gray-800 text-white text-2xl font-bold rounded-xl hover:bg-gray-900">
+                我知道了
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= 前端核心 JavaScript 邏輯 ================= -->
+    <script>
+        // 1. 分頁切換邏輯
+        function switchTab(tab) {
+            const gameSec = document.getElementById('section-game');
+            const checkSec = document.getElementById('section-check');
+            const gameBtn = document.getElementById('btn-game');
+            const checkBtn = document.getElementById('btn-check');
+
+            if (tab === 'game') {
+                gameSec.classList.remove('hidden');
+                checkSec.classList.add('hidden');
+                gameBtn.className = "flex-1 py-4 text-2xl font-bold rounded-xl shadow-md transition bg-blue-500 text-white border-2 border-blue-600";
+                checkBtn.className = "flex-1 py-4 text-2xl font-bold rounded-xl shadow-md transition bg-white text-gray-700 border-2 border-gray-200 hover:bg-gray-50";
+            } else {
+                gameSec.classList.add('hidden');
+                checkSec.classList.remove('hidden');
+                checkBtn.className = "flex-1 py-4 text-2xl font-bold rounded-xl shadow-md transition bg-blue-500 text-white border-2 border-blue-600";
+                gameBtn.className = "flex-1 py-4 text-2xl font-bold rounded-xl shadow-md transition bg-white text-gray-700 border-2 border-gray-200 hover:bg-gray-50";
+            }
+        }
+
+        // 2. 小遊戲資料庫（寫死在前端，省去後端成本）
+        const quizData = [
+            {
+                text: "【台灣電力公司】您本月電費已逾期，請盡速至 http://taipower-fee.xyz 繳費，否則將於明日斷電。",
+                isFraud: true, // 點擊「這是詐騙」才是對的
+                replyTrue: "阿公阿嬤太厲害了！正版台電的網址一定是 <b>.gov.tw</b> 結尾，這種開頭沒寫 https、後面又是 .xyz 的絕對是騙錢的！",
+                replyFalse: "哎呀差一點！正版台電<b>絕對不會</b>用簡訊催繳費用，更不會附上奇怪的網址要你刷卡。下次要注意看喔！"
+            },
+            {
+                text: "【中華郵政】您的包裹因地址不全無法投遞，請在24小時內點擊 http://post-tw-redirection.club 更新資料並支付 50 元手續費。",
+                isFraud: true,
+                replyTrue: "完全正確！這是超經典的「假包裹簡訊」！郵局不會因為地址不全要你線上刷卡，點進去信用卡就會被盜刷喔！",
+                replyFalse: "被騙走 50 元事小，卡片被盜刷事大！中華郵政官方網址是 <b>post.gov.tw</b>，千萬別點不明連結！"
+            },
+            {
+                text: "王阿姨您好，我是之前聯絡您的投顧小張。社團內分享的明牌已經連續三天漲停，請點擊連結免費進 LINE 群領取明牌：https://line.me/R/ti/g/mockgroup",
+                isFraud: true,
+                replyTrue: "厲害！天下沒有白吃的午餐。這種「帶你賺大錢、加 LINE 飆股群」百分之百是假投資詐騙，進去就出不來了！",
+                replyFalse: "小心存款被騙光！群組裡除了你之外，其他 50 個人全部都是詐騙集團的臨演（樁腳），千萬不要相信保證獲利！"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let hasAnswered = false;
+
+        function answerQuestion(userChoseFraud) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+
+            const q = quizData[currentQuestion];
+            const isCorrect = (userChoseFraud === q.isFraud);
+            
+            if (isCorrect) {
+                score += 10;
+                document.getElementById('game-score').innerText = score;
+            }
+
+            // 設定彈窗內容
+            document.getElementById('modal-title').innerText = isCorrect ? " 🎉 答對了！" : " ❌ 哎呀被騙了！";
+            document.getElementById('modal-icon').innerText = isCorrect ? "⭕" : "❌";
+            document.getElementById('modal-desc').innerHTML = isCorrect ? q.replyTrue : q.replyFalse;
+            
+            const borderEl = document.getElementById('modal-border');
+            borderEl.className = isCorrect ? "bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center border-4 border-green-500" : "bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center border-4 border-red-500";
+
+            // 顯示彈窗
+            document.getElementById('result-modal').classList.remove('hidden');
+            document.getElementById('next-box').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                hasAnswered = false;
+                document.getElementById('next-box').classList.add('hidden');
+                document.getElementById('question-text').innerText = quizData[currentQuestion].text;
+                document.getElementById('game-progress').innerText = `題目 ${currentQuestion + 1} / ${quizData.length}`;
+            } else {
+                alert(`🎉 恭喜完成挑戰！您的總得分是：${score} 分！`);
+                // 重置遊戲
+                currentQuestion = 0;
+                score = 0;
+                hasAnswered = false;
+                document.getElementById('game-score').innerText = score;
+                document.getElementById('next-box').classList.add('hidden');
+                document.getElementById('question-text').innerText = quizData[0].text;
+                document.getElementById('game-progress').innerText = `題目 1 / ${quizData.length}`;
+            }
+        }
+
+        // 3. 網址比對邏輯（模擬 1605 黑名單）
+        // 只要使用者輸入的字串「包含」下面這些關鍵字，就直接抓包
+        const mockBadUrls = [
+            'taipower-fee.xyz',
+            'post-tw-redirection.club',
+            'sh0pee.club',
+            'gov.tw-bills.top',
+            'tpex-vip.cc'
+        ];
+
+        function processCheckUrl() {
+            const input = document.getElementById('url-input').value.trim().toLowerCase();
+            const resultDiv = document.getElementById('check-result');
+            
+            if (!input) {
+                alert('請先輸入或貼上網址喔！');
+                return;
+            }
+
+            resultDiv.classList.remove('hidden');
+
+            // 檢查是否命中模擬黑名單
+            let isHit = false;
+            for (let badUrl of mockBadUrls) {
+                if (input.includes(badUrl)) {
+                    isHit = true;
+                    break;
+                }
+            }
+
+            if (isHit) {
+                resultDiv.innerHTML = `
+                    <div class="bg-red-100 border-4 border-red-500 rounded-2xl p-6 text-red-900">
+                        <div class="text-5xl mb-2 text-center">🚨 危險！這是詐騙 🚨</div>
+                        <p class="text-2xl font-bold leading-relaxed mt-4">
+                            警告：這個網址與通報的詐騙釣魚網站完全吻合！請絕對不要點開，也不要在裡面輸入任何身分證字號、信用卡號或銀行密碼！
+                        </p>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="bg-amber-100 border-4 border-amber-500 rounded-2xl p-6 text-amber-900">
+                        <div class="text-4xl font-black mb-2 text-center">⚠️ 注意：請保持警覺 ⚠️</div>
+                        <p class="text-2xl leading-relaxed mt-4">
+                            雖然這個網址目前不在資料庫中，但<b>新開的詐騙網站每天有幾千個</b>。
+                        </p>
+                        <p class="text-xl font-bold mt-2 text-amber-800">
+                            💡 長輩防詐小撇步：只要是簡訊叫你點的、LINE 陌生人傳的、或是要你輸入卡號的，高機率都是騙人的！
+                        </p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
