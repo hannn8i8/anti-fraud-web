@@ -6,32 +6,111 @@
   <title>網路匯款安全風險即時評估器</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'Noto Sans TC', sans-serif;
-    }
-    .mono {
-      font-family: 'Consolas', 'Courier New', 'SF Mono', monospace;
-    }
-
-    /* ── Gradient text ── */
-    .gradient-text {
-      background: linear-gradient(135deg, #22d3ee 0%, #818cf8 55%, #c084fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-family: "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+      background: #2c145f;
+      color: #111;
+      overflow-x: hidden;
     }
 
-    /* ── Scanlines overlay ── */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        0deg, transparent, transparent 3px,
-        rgba(0,0,0,0.018) 3px, rgba(0,0,0,0.018) 4px
-      );
-      z-index: 9999;
+    /* ── Neobrutalism helpers ── */
+    .neo         { box-shadow: 7px 7px 0 #111; }
+    .neo-sm      { box-shadow: 5px 5px 0 #111; }
+    .neo-xs      { box-shadow: 3px 3px 0 #111; }
+    .neo-red     { box-shadow: 7px 7px 0 #d11a4a; }
+    .neo-red-sm  { box-shadow: 5px 5px 0 #d11a4a; }
+
+    /* ── Navbar ── */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(180deg, #4b1fd6, #2f0f9e);
+      border-bottom: 5px solid #111;
+    }
+    .nav-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: auto;
+      font-size: 15px;
+      font-weight: 900;
+      color: white;
+    }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 3px solid #111;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: default;
+      user-select: none;
+      transition: transform .1s, box-shadow .1s;
+    }
+    .nav-btn-active {
+      background: #f4e27a;
+      color: #111;
+      box-shadow: 4px 4px 0 #111;
+    }
+    .nav-btn-game {
+      background: #d9b5ff;
+      color: #111;
+      box-shadow: 4px 4px 0 #111;
+      cursor: pointer;
+    }
+    .nav-btn-game:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 #111;
+    }
+
+    /* ── Form cards ── */
+    .form-card {
+      background: #f4ecff;
+      border: 5px solid #111;
+      border-radius: 22px;
+      padding: 22px 24px;
+      box-shadow: 8px 8px 0 #111;
+    }
+
+    .section-num {
+      width: 42px;
+      height: 42px;
+      background: #5f2cf4;
+      border: 4px solid #111;
+      border-radius: 12px;
+      box-shadow: 3px 3px 0 #111;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 900;
+      font-size: 13px;
+      font-family: 'Consolas', monospace;
+      flex-shrink: 0;
+    }
+
+    .type-badge {
+      background: #d9b5ff;
+      border: 2px solid #111;
+      border-radius: 999px;
+      padding: 3px 12px;
+      font-size: 11px;
+      font-weight: 900;
+      color: #35106c;
+      white-space: nowrap;
     }
 
     /* ── Option cards ── */
@@ -40,478 +119,523 @@
       align-items: flex-start;
       gap: 12px;
       padding: 12px 14px;
-      border: 1px solid rgba(51, 65, 85, 0.8);
-      border-radius: 12px;
+      background: white;
+      border: 3px solid #c5b8e0;
+      border-radius: 14px;
       cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease;
+      transition: all .12s ease;
       user-select: none;
     }
     .option-card:hover {
-      border-color: rgba(6, 182, 212, 0.45);
-      background: rgba(6, 182, 212, 0.04);
+      border-color: #5f2cf4;
+      background: #ede0ff;
+      transform: translate(-1px, -1px);
     }
     .option-card.selected {
-      border-color: rgba(6, 182, 212, 0.75);
-      background: rgba(6, 182, 212, 0.09);
+      background: #f4e27a;
+      border: 3px solid #111;
+      box-shadow: 4px 4px 0 #111;
     }
 
     input[type="radio"],
     input[type="checkbox"] {
-      accent-color: #06b6d4;
-      width: 1rem;
-      height: 1rem;
-      margin-top: 3px;
+      accent-color: #5f2cf4;
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
       flex-shrink: 0;
       cursor: pointer;
     }
 
-    /* ── Progress bar container ── */
-    .progress-track {
-      position: relative;
-      height: 20px;
-      background: rgba(30, 41, 59, 0.8);
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid rgba(51, 65, 85, 0.5);
+    /* ── Risk tags ── */
+    .risk-tag {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 2px 10px;
+      border: 2px solid #111;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 900;
+      font-family: 'Consolas', monospace;
     }
-    /* Tick marks */
-    .progress-track::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(90deg, transparent calc(25% - 0.5px), rgba(148,163,184,0.2) calc(25% - 0.5px), rgba(148,163,184,0.2) 25%, transparent 25%),
-        linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(148,163,184,0.2) calc(50% - 0.5px), rgba(148,163,184,0.2) 50%, transparent 50%),
-        linear-gradient(90deg, transparent calc(75% - 0.5px), rgba(148,163,184,0.2) calc(75% - 0.5px), rgba(148,163,184,0.2) 75%, transparent 75%);
-      pointer-events: none;
-      z-index: 1;
-    }
+    .risk-safe { background: #b5f39a; }
+    .risk-mid  { background: #ffed59; }
+    .risk-high { background: #ffb3c6; }
 
+    /* ── Progress bar ── */
+    .progress-track {
+      height: 30px;
+      background: white;
+      border: 4px solid #111;
+      border-radius: 999px;
+      box-shadow: 4px 4px 0 #111;
+      overflow: hidden;
+    }
     #progressBar {
       height: 100%;
       border-radius: 999px;
-      transition: width 0.65s cubic-bezier(0.4, 0, 0.2, 1),
-                  background 0.4s ease,
-                  box-shadow 0.4s ease;
-      background: linear-gradient(90deg, #1e3a5f, #1e3a5f);
+      background: #ddd;
+      transition: width .65s cubic-bezier(.4,0,.2,1), background .3s ease;
     }
 
-    /* ── Alert card pulsing border ── */
-    @keyframes borderPulse {
-      0%, 100% { border-color: rgba(239, 68, 68, 0.5); box-shadow: 0 0 12px rgba(239, 68, 68, 0.15); }
-      50%       { border-color: rgba(239, 68, 68, 1);   box-shadow: 0 0 30px rgba(239, 68, 68, 0.45); }
+    /* ── Status message ── */
+    .status-msg {
+      margin-top: 16px;
+      padding: 16px 20px;
+      border: 4px solid #111;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.55;
+      text-align: center;
     }
-    .alert-border-pulse { animation: borderPulse 1.2s ease-in-out infinite; }
+    .s-idle   { background: white;   color: #888; }
+    .s-safe   { background: #b5f39a; color: #1a5c1a; box-shadow: 4px 4px 0 #111; }
+    .s-mid    { background: #ffed59; color: #7a5a00; box-shadow: 4px 4px 0 #111; }
+    .s-danger { background: #ffb3c6; color: #7a001a; box-shadow: 4px 4px 0 #111; }
 
-    /* ── Blink ── */
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
-    .blink { animation: blink 0.9s ease-in-out infinite; }
+    /* ── Alert card ── */
+    @keyframes alertBounce {
+      0%, 100% { transform: translateY(0);   box-shadow: 8px 8px 0 #d11a4a; }
+      50%       { transform: translateY(-8px); box-shadow: 12px 16px 0 #d11a4a; }
+    }
+    .alert-card {
+      background: #ffe0e8;
+      border: 6px solid #d11a4a;
+      border-radius: 22px;
+      padding: 36px 28px;
+      text-align: center;
+      animation: alertBounce 1.5s ease-in-out infinite;
+    }
 
-    /* ── Card glow ── */
-    .card-glow {
-      box-shadow: 0 0 0 1px rgba(6,182,212,0.08), 0 4px 28px rgba(0,0,0,0.45);
+    /* ── Buttons ── */
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 26px;
+      background: #d11a4a;
+      border: 4px solid #111;
+      border-radius: 14px;
+      box-shadow: 5px 5px 0 #111;
+      font-size: 15px;
+      font-weight: 950;
+      color: white;
+      text-decoration: none;
+      transition: all .12s;
+    }
+    .btn-danger:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 7px 7px 0 #111;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 24px;
+      background: #f4ecff;
+      border: 4px solid #111;
+      border-radius: 14px;
+      box-shadow: 4px 4px 0 #111;
+      font-size: 14px;
+      font-weight: 900;
+      color: #35106c;
+      text-decoration: none;
+      transition: all .12s;
+    }
+    .btn-ghost:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 #111;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 34px;
+      background: #f4e27a;
+      border: 5px solid #111;
+      border-radius: 18px;
+      box-shadow: 7px 7px 0 #111;
+      font-size: 18px;
+      font-weight: 950;
+      color: #111;
+      text-decoration: none;
+      transition: all .12s;
+    }
+    .btn-cta:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 10px 10px 0 #111;
     }
 
     /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 4px; }
+    ::-webkit-scrollbar       { width: 6px; }
+    ::-webkit-scrollbar-track { background: #2c145f; }
+    ::-webkit-scrollbar-thumb { background: #5f2cf4; border-radius: 4px; }
+
+    .hidden { display: none !important; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-200 min-h-screen">
+<body>
 
-  <!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
-  <nav class="sticky top-0 z-40 bg-slate-900/85 backdrop-blur-lg border-b border-slate-700/40">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
-      <!-- Brand -->
-      <div class="flex items-center gap-2 mr-auto">
-        <span class="text-cyan-400 text-xl">🛡️</span>
-        <span class="mono text-cyan-300 font-bold text-sm tracking-widest hidden sm:block">ANTI-FRAUD SYSTEM</span>
-      </div>
-      <!-- Active page -->
-      <span class="px-3 sm:px-4 py-2 rounded-lg bg-cyan-500/20 border border-cyan-500/60 text-cyan-300 font-semibold text-xs sm:text-sm cursor-default select-none">
-        📊 風險評估器
-      </span>
-      <!-- Game link -->
-      <a href="./my-game.html"
-         class="px-3 sm:px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/45 text-purple-300 font-semibold text-xs sm:text-sm hover:bg-purple-500/35 transition-colors">
-        🎮 進入防詐小遊戲
-      </a>
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <span style="font-size:22px;">🛡️</span>
+      <span class="hidden sm:inline">ANTI-FRAUD SYSTEM</span>
     </div>
-  </nav>
+    <span class="nav-btn nav-btn-active">📊 風險評估器</span>
+    <a href="./my-game.html" class="nav-btn nav-btn-game">🎮 進入防詐小遊戲</a>
+  </div>
+</nav>
 
-  <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
-  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+<!-- ══════════ MAIN ══════════ -->
+<main style="max-width:860px; margin:0 auto; padding:40px 20px 60px;">
 
-    <!-- ── Header ── -->
-    <header class="text-center mb-10">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-red-950/40 border border-red-500/40 rounded-full text-red-400 text-xs mono mb-5 tracking-widest">
-        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse flex-shrink-0"></span>
-        FRAUD DETECTION SYSTEM v2.0 &nbsp;·&nbsp; LIVE
+  <!-- ── Header ── -->
+  <header style="text-align:center; margin-bottom:36px;">
+    <div style="display:inline-flex; align-items:center; gap:8px;
+                background:#f4e27a; border:3px solid #111; border-radius:999px;
+                padding:6px 20px; box-shadow:3px 3px 0 #111;
+                font-weight:900; font-size:13px; margin-bottom:18px;">
+      ⚠️ 詐騙風險即時偵測系統
+    </div>
+
+    <h1 style="font-size:clamp(1.9rem,5.5vw,3rem); font-weight:950; color:white;
+               line-height:1.2; margin:0 0 14px;
+               text-shadow:4px 4px 0 rgba(0,0,0,0.45);">
+      網路匯款安全風險<br>即時評估器
+    </h1>
+
+    <p style="color:#d9b5ff; font-size:14px; font-weight:800; line-height:1.7; margin:0;">
+      根據 <span style="color:#f4e27a;">165 反詐騙案例資料庫</span> 設計<br>
+      請誠實填答以取得準確風險評估結果
+    </p>
+  </header>
+
+  <!-- ══════════ FORM ══════════ -->
+  <div style="display:flex; flex-direction:column; gap:20px;">
+
+    <!-- 01 接觸與聯絡管道 -->
+    <div class="form-card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <div class="section-num">01</div>
+        <h2 style="flex:1; margin:0; font-size:19px; font-weight:950; color:#35106c;">接觸與聯絡管道</h2>
+        <div class="type-badge">單選</div>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-black mb-3 gradient-text leading-tight">
-        網路匯款安全風險即時評估器
-      </h1>
-      <p class="text-slate-400 text-sm max-w-md mx-auto leading-relaxed">
-        根據 <span class="text-cyan-400/80">165 反詐騙案例資料庫</span> 與詐騙心理操作流程設計<br>
-        請誠實填答，系統將即時為您評估此筆交易的風險等級
+      <div style="display:flex; flex-direction:column; gap:10px;">
+
+        <label class="option-card">
+          <input type="radio" name="ind1" value="0" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">蝦皮、Momo 等官方電商系統內建付款機制</p>
+            <span class="risk-tag risk-safe">風險值 +0</span>
+          </div>
+        </label>
+
+        <label class="option-card">
+          <input type="radio" name="ind1" value="20" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">透過 Instagram 私訊、Facebook 二手買賣社團引導私下交易</p>
+            <span class="risk-tag risk-mid">風險值 +20</span>
+          </div>
+        </label>
+
+        <label class="option-card">
+          <input type="radio" name="ind1" value="35" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">點擊陌生簡訊、廣告引導加入的「LINE 投資 / 飆股 / 假交友群組」</p>
+            <span class="risk-tag risk-high">風險值 +35</span>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- 02 心理操弄 -->
+    <div class="form-card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <div class="section-num">02</div>
+        <h2 style="flex:1; margin:0; font-size:19px; font-weight:950; color:#35106c;">對方的指示與心理操弄</h2>
+        <div class="type-badge">複選</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+
+        <label class="option-card">
+          <input type="checkbox" name="ind2" value="30" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">對方拋出「高報酬、保證獲利、穩賺不賠」誘惑，或起初讓你小額獲利後慫恿加碼</p>
+            <span class="risk-tag risk-high">風險值 +30</span>
+          </div>
+        </label>
+
+        <label class="option-card">
+          <input type="checkbox" name="ind2" value="20" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">對方製造時間壓力，強調「限時優惠 / 最後名額」讓你焦慮、來不及思考</p>
+            <span class="risk-tag risk-mid">風險值 +20</span>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- 03 假官方 -->
+    <div class="form-card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <div class="section-num">03</div>
+        <h2 style="flex:1; margin:0; font-size:19px; font-weight:950; color:#35106c;">假官方與身分驗證</h2>
+        <div class="type-badge">複選</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+
+        <label class="option-card">
+          <input type="checkbox" name="ind3" value="30" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">對方自稱檢警、法官、銀行客服，告知你涉案或帳戶異常，要求匯入「安全帳戶」監管</p>
+            <span class="risk-tag risk-high">風險值 +30</span>
+          </div>
+        </label>
+
+        <label class="option-card">
+          <input type="checkbox" name="ind3" value="15" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">對方提供看似真實的「轉帳截圖」或可疑網址，且無法透過 165 查證其真實身分</p>
+            <span class="risk-tag risk-mid">風險值 +15</span>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- 04 話術特徵 -->
+    <div class="form-card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <div class="section-num">04</div>
+        <h2 style="flex:1; margin:0; font-size:19px; font-weight:950; color:#35106c;">匯款溝通話術特徵</h2>
+        <div class="type-badge">單選</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+
+        <label class="option-card">
+          <input type="radio" name="ind4" value="0" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">正常透明的交易，無特別交代</p>
+            <span class="risk-tag risk-safe">風險值 +0</span>
+          </div>
+        </label>
+
+        <label class="option-card">
+          <input type="radio" name="ind4" value="35" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">對方強烈要求你「對銀行行員或家人隱瞞真實匯款目的」，教你騙行員說是裝潢費、買車、或親戚借錢</p>
+            <span class="risk-tag risk-high">風險值 +35</span>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- 05 金流 -->
+    <div class="form-card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <div class="section-num">05</div>
+        <h2 style="flex:1; margin:0; font-size:19px; font-weight:950; color:#35106c;">金流與收款管道性質</h2>
+        <div class="type-badge">單選</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+
+        <label class="option-card">
+          <input type="radio" name="ind5" value="0" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">經實名認證之官方商家或第三方支付帳戶</p>
+            <span class="risk-tag risk-safe">風險值 +0</span>
+          </div>
+        </label>
+
+        <label class="option-card">
+          <input type="radio" name="ind5" value="20" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">對方提供的個人銀行陌生帳戶、虛擬帳戶，或要求使用 ATM / 網銀快速轉帳</p>
+            <span class="risk-tag risk-mid">風險值 +20</span>
+          </div>
+        </label>
+
+        <label class="option-card">
+          <input type="radio" name="ind5" value="30" onchange="calculateRisk()">
+          <div style="flex:1;">
+            <p style="margin:0; font-size:14px; font-weight:800; line-height:1.55;">要求使用加密貨幣（USDT）、儲值點數卡、或無摺存款等難以追查的金流</p>
+            <span class="risk-tag risk-high">風險值 +30</span>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+  </div>
+  <!-- ══════════ END FORM ══════════ -->
+
+
+  <!-- ══════════ RESULTS ══════════ -->
+  <div style="display:flex; flex-direction:column; gap:20px; margin-top:24px;">
+
+    <!-- Risk meter -->
+    <div class="form-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span style="font-size:12px; font-weight:900; color:#5f2cf4; font-family:'Consolas',monospace; letter-spacing:.1em;">
+          RISK LEVEL ANALYSIS
+        </span>
+        <div style="display:flex; align-items:baseline; gap:8px;">
+          <span id="rawScore" style="font-size:12px; color:#aaa; font-family:'Consolas',monospace;"></span>
+          <span id="percentText" style="font-size:40px; font-weight:950; color:#35106c; font-family:'Consolas',monospace;">0%</span>
+        </div>
+      </div>
+
+      <div class="progress-track">
+        <div id="progressBar" style="width:0%;"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:#999; margin-top:6px; padding:0 2px; font-family:'Consolas',monospace;">
+        <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+      </div>
+
+      <div id="statusMessage" class="status-msg s-idle">
+        ── 請填寫上方表單以開始評估 ──
+      </div>
+    </div>
+
+    <!-- DANGER ALERT (hidden by default) -->
+    <div id="alertCard" class="alert-card hidden">
+      <div style="font-size:80px; margin-bottom:12px; line-height:1;">🚨</div>
+      <div style="display:inline-flex; align-items:center; gap:6px;
+                  background:#d11a4a; color:white;
+                  border:3px solid #111; border-radius:999px;
+                  padding:4px 18px; box-shadow:3px 3px 0 #111;
+                  font-weight:950; font-size:12px; margin-bottom:16px;">
+        ⚠ CRITICAL ALERT
+      </div>
+      <h3 style="font-size:clamp(1.4rem,4vw,1.9rem); font-weight:950; color:#d11a4a; margin:0 0 14px;">
+        極度危險！請立即停止匯款！
+      </h3>
+      <p style="font-size:15px; font-weight:800; line-height:1.75; color:#333; margin:0 auto 24px; max-width:480px;">
+        此筆交易與 165 反詐騙通報之<br>
+        <strong>「假投資 ／ 解除分期 ／ 假檢警」</strong><br>
+        匯款詐騙特徵<strong style="color:#d11a4a;">完全吻合</strong>，<br>
+        請立即停止轉帳，並撥打 <strong>165 反詐騙專線</strong>！
       </p>
-    </header>
-
-    <!-- ════════════════════════ ASSESSMENT FORM ════════════════════════ -->
-    <div class="space-y-5">
-
-      <!-- ── 指標 01 ── -->
-      <section class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-5 sm:p-6 card-glow">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-9 h-9 bg-gradient-to-br from-cyan-500/25 to-blue-500/25 border border-cyan-500/40 rounded-xl flex items-center justify-center text-cyan-400 font-bold text-xs mono flex-shrink-0">01</div>
-          <div>
-            <h2 class="text-cyan-300 font-bold text-base sm:text-lg">接觸與聯絡管道</h2>
-            <p class="text-slate-500 text-xs mono">CONTACT CHANNEL &nbsp;·&nbsp; 單選</p>
-          </div>
-        </div>
-        <div class="space-y-2.5">
-
-          <label class="option-card">
-            <input type="radio" name="ind1" value="0" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">蝦皮、Momo 等官方電商系統內建付款機制</p>
-              <span class="inline-block mt-1.5 text-xs mono text-green-400/90 bg-green-950/50 border border-green-500/25 px-2 py-0.5 rounded-md">風險值 +0</span>
-            </div>
-          </label>
-
-          <label class="option-card">
-            <input type="radio" name="ind1" value="20" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">透過 Instagram 私訊、Facebook 二手買賣社團引導私下交易</p>
-              <span class="inline-block mt-1.5 text-xs mono text-yellow-400/90 bg-yellow-950/50 border border-yellow-500/25 px-2 py-0.5 rounded-md">風險值 +20</span>
-            </div>
-          </label>
-
-          <label class="option-card">
-            <input type="radio" name="ind1" value="35" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">點擊陌生簡訊、廣告引導加入的「LINE 投資 / 飆股 / 假交友群組」</p>
-              <span class="inline-block mt-1.5 text-xs mono text-red-400/90 bg-red-950/50 border border-red-500/25 px-2 py-0.5 rounded-md">風險值 +35</span>
-            </div>
-          </label>
-
-        </div>
-      </section>
-
-      <!-- ── 指標 02 ── -->
-      <section class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-5 sm:p-6 card-glow">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-9 h-9 bg-gradient-to-br from-cyan-500/25 to-blue-500/25 border border-cyan-500/40 rounded-xl flex items-center justify-center text-cyan-400 font-bold text-xs mono flex-shrink-0">02</div>
-          <div>
-            <h2 class="text-cyan-300 font-bold text-base sm:text-lg">對方的指示與心理操弄</h2>
-            <p class="text-slate-500 text-xs mono">PSYCHOLOGICAL MANIPULATION &nbsp;·&nbsp; 複選</p>
-          </div>
-        </div>
-        <div class="space-y-2.5">
-
-          <label class="option-card">
-            <input type="checkbox" name="ind2" value="30" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">對方拋出「高報酬、保證獲利、穩賺不賠」誘惑，或起初讓你小額獲利後慫恿加碼</p>
-              <span class="inline-block mt-1.5 text-xs mono text-red-400/90 bg-red-950/50 border border-red-500/25 px-2 py-0.5 rounded-md">風險值 +30</span>
-            </div>
-          </label>
-
-          <label class="option-card">
-            <input type="checkbox" name="ind2" value="20" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">對方製造時間壓力，強調「限時優惠 / 最後名額」讓你焦慮、來不及思考</p>
-              <span class="inline-block mt-1.5 text-xs mono text-yellow-400/90 bg-yellow-950/50 border border-yellow-500/25 px-2 py-0.5 rounded-md">風險值 +20</span>
-            </div>
-          </label>
-
-        </div>
-      </section>
-
-      <!-- ── 指標 03 ── -->
-      <section class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-5 sm:p-6 card-glow">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-9 h-9 bg-gradient-to-br from-cyan-500/25 to-blue-500/25 border border-cyan-500/40 rounded-xl flex items-center justify-center text-cyan-400 font-bold text-xs mono flex-shrink-0">03</div>
-          <div>
-            <h2 class="text-cyan-300 font-bold text-base sm:text-lg">假官方與身分驗證</h2>
-            <p class="text-slate-500 text-xs mono">FAKE AUTHORITY &nbsp;·&nbsp; 複選</p>
-          </div>
-        </div>
-        <div class="space-y-2.5">
-
-          <label class="option-card">
-            <input type="checkbox" name="ind3" value="30" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">對方自稱檢警、法官、銀行客服，告知你涉案或帳戶異常，要求匯入「安全帳戶」監管</p>
-              <span class="inline-block mt-1.5 text-xs mono text-red-400/90 bg-red-950/50 border border-red-500/25 px-2 py-0.5 rounded-md">風險值 +30</span>
-            </div>
-          </label>
-
-          <label class="option-card">
-            <input type="checkbox" name="ind3" value="15" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">對方提供看似真實的「轉帳截圖」或可疑網址，且無法透過 165 查證其真實身分</p>
-              <span class="inline-block mt-1.5 text-xs mono text-yellow-400/90 bg-yellow-950/50 border border-yellow-500/25 px-2 py-0.5 rounded-md">風險值 +15</span>
-            </div>
-          </label>
-
-        </div>
-      </section>
-
-      <!-- ── 指標 04 ── -->
-      <section class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-5 sm:p-6 card-glow">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-9 h-9 bg-gradient-to-br from-cyan-500/25 to-blue-500/25 border border-cyan-500/40 rounded-xl flex items-center justify-center text-cyan-400 font-bold text-xs mono flex-shrink-0">04</div>
-          <div>
-            <h2 class="text-cyan-300 font-bold text-base sm:text-lg">匯款溝通話術特徵</h2>
-            <p class="text-slate-500 text-xs mono">TRANSFER SCRIPT &nbsp;·&nbsp; 單選</p>
-          </div>
-        </div>
-        <div class="space-y-2.5">
-
-          <label class="option-card">
-            <input type="radio" name="ind4" value="0" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">正常透明的交易，無特別交代</p>
-              <span class="inline-block mt-1.5 text-xs mono text-green-400/90 bg-green-950/50 border border-green-500/25 px-2 py-0.5 rounded-md">風險值 +0</span>
-            </div>
-          </label>
-
-          <label class="option-card">
-            <input type="radio" name="ind4" value="35" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">對方強烈要求你「對銀行行員或家人隱瞞真實匯款目的」，教你騙行員說是裝潢費、買車、或親戚借錢</p>
-              <span class="inline-block mt-1.5 text-xs mono text-red-400/90 bg-red-950/50 border border-red-500/25 px-2 py-0.5 rounded-md">風險值 +35</span>
-            </div>
-          </label>
-
-        </div>
-      </section>
-
-      <!-- ── 指標 05 ── -->
-      <section class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-5 sm:p-6 card-glow">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-9 h-9 bg-gradient-to-br from-cyan-500/25 to-blue-500/25 border border-cyan-500/40 rounded-xl flex items-center justify-center text-cyan-400 font-bold text-xs mono flex-shrink-0">05</div>
-          <div>
-            <h2 class="text-cyan-300 font-bold text-base sm:text-lg">金流與收款管道性質</h2>
-            <p class="text-slate-500 text-xs mono">PAYMENT CHANNEL &nbsp;·&nbsp; 單選</p>
-          </div>
-        </div>
-        <div class="space-y-2.5">
-
-          <label class="option-card">
-            <input type="radio" name="ind5" value="0" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">經實名認證之官方商家或第三方支付帳戶</p>
-              <span class="inline-block mt-1.5 text-xs mono text-green-400/90 bg-green-950/50 border border-green-500/25 px-2 py-0.5 rounded-md">風險值 +0</span>
-            </div>
-          </label>
-
-          <label class="option-card">
-            <input type="radio" name="ind5" value="20" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">對方提供的個人銀行陌生帳戶、虛擬帳戶，或要求使用 ATM / 網銀快速轉帳</p>
-              <span class="inline-block mt-1.5 text-xs mono text-yellow-400/90 bg-yellow-950/50 border border-yellow-500/25 px-2 py-0.5 rounded-md">風險值 +20</span>
-            </div>
-          </label>
-
-          <label class="option-card">
-            <input type="radio" name="ind5" value="30" onchange="calculateRisk()">
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-300 text-sm leading-relaxed">要求使用加密貨幣（USDT）、儲值點數卡、或無摺存款等難以追查的金流</p>
-              <span class="inline-block mt-1.5 text-xs mono text-red-400/90 bg-red-950/50 border border-red-500/25 px-2 py-0.5 rounded-md">風險值 +30</span>
-            </div>
-          </label>
-
-        </div>
-      </section>
-
-    </div>
-    <!-- ════════════════════════ END FORM ════════════════════════ -->
-
-
-    <!-- ════════════════════════ RESULTS ════════════════════════ -->
-    <div class="mt-8 space-y-5">
-
-      <!-- Risk Meter -->
-      <div class="bg-slate-800/55 border border-slate-700/50 rounded-2xl p-5 sm:p-6 card-glow">
-
-        <div class="flex items-center justify-between mb-3">
-          <span class="mono text-slate-500 text-xs tracking-widest">RISK LEVEL ANALYSIS</span>
-          <div class="flex items-baseline gap-2">
-            <span id="rawScore" class="mono text-slate-600 text-xs"></span>
-            <span id="percentText" class="mono text-3xl font-black text-slate-300 tabular-nums">0%</span>
-          </div>
-        </div>
-
-        <!-- Bar -->
-        <div class="progress-track mb-1.5">
-          <div id="progressBar" style="width:0%"></div>
-        </div>
-        <!-- Scale -->
-        <div class="flex justify-between mono text-slate-600 text-xs px-0.5 mb-4">
-          <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
-        </div>
-
-        <!-- Status message -->
-        <div id="statusMessage"
-             class="p-4 bg-slate-900/60 rounded-xl border border-slate-700/40 text-center text-sm text-slate-500 mono leading-relaxed">
-          ── 請填寫上方表單以開始評估 ──
-        </div>
-      </div>
-
-      <!-- ── EXTREME DANGER ALERT (hidden by default) ── -->
-      <div id="alertCard"
-           class="hidden bg-red-950/50 border-2 border-red-600/60 rounded-2xl p-6 alert-border-pulse">
-        <div class="text-center">
-          <div class="text-6xl mb-4 blink">🚨</div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-900/50 border border-red-500/45 rounded-full text-red-400 text-xs mono tracking-widest mb-4">
-            <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse flex-shrink-0"></span>
-            CRITICAL ALERT &nbsp;·&nbsp; 極高風險特徵組合偵測
-          </div>
-          <h3 class="text-red-300 font-black text-xl sm:text-2xl mb-3">
-            極度危險！請立即停止匯款！
-          </h3>
-          <p class="text-slate-300 text-sm leading-relaxed mb-6 max-w-lg mx-auto">
-            此筆交易與 165 反詐騙通報之
-            <strong class="text-red-400">「假投資 ／ 解除分期 ／ 假檢警」</strong>
-            匯款詐騙特徵<strong class="text-red-300">完全吻合</strong>，
-            請立即停止轉帳，並撥打 <strong class="text-red-300">165 反詐騙專線</strong>！
-          </p>
-          <div class="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="tel:165"
-               class="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-colors text-base shadow-lg shadow-red-950/60">
-              📞 立即撥打 165 反詐騙專線
-            </a>
-            <a href="https://165.npa.gov.tw" target="_blank" rel="noopener"
-               class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold rounded-xl transition-colors text-sm">
-              🔗 前往 165 全民防騙網
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Game CTA ── -->
-      <div class="bg-gradient-to-br from-purple-950/60 to-slate-800/55 border border-purple-500/30 rounded-2xl p-6 text-center">
-        <div class="text-4xl mb-3">🎮</div>
-        <h3 class="text-slate-100 font-bold text-lg mb-1">想測試自己的防詐直覺嗎？</h3>
-        <p class="text-slate-400 text-sm mb-5 leading-relaxed">
-          點擊按鈕挑戰團隊開發的【防詐騙實戰挑戰賽】！<br>
-          <span class="text-purple-400/65 text-xs">在真實情境模擬中，你能識破詐騙套路嗎？</span>
-        </p>
-        <a href="./my-game.html"
-           class="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-bold rounded-xl transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-purple-900/50 text-base">
-          🕹️ 進入防詐騙實戰挑戰賽 →
+      <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center;">
+        <a href="tel:165" class="btn-danger">📞 立即撥打 165 反詐騙專線</a>
+        <a href="https://165.npa.gov.tw" target="_blank" rel="noopener" class="btn-ghost">
+          🔗 165 全民防騙網
         </a>
       </div>
-
     </div>
-    <!-- ════════════════════════ END RESULTS ════════════════════════ -->
 
-    <footer class="mt-10 pt-6 border-t border-slate-800 text-center">
-      <p class="text-slate-600 text-xs mono leading-relaxed">
-        資料參考：165 全民防騙網 ｜ 內政部警政署刑事局<br>
-        本工具僅供大學通識課程教育使用，非正式法律或金融建議
+    <!-- Game CTA -->
+    <div style="background:linear-gradient(135deg, #5f2cf4 0%, #3c1aaa 100%);
+                border:5px solid #111; border-radius:22px;
+                box-shadow:8px 8px 0 #111; padding:36px 28px; text-align:center;">
+      <div style="font-size:56px; margin-bottom:14px; line-height:1;">🎮</div>
+      <h3 style="font-size:22px; font-weight:950; color:white; margin:0 0 8px;">
+        想測試自己的防詐直覺嗎？
+      </h3>
+      <p style="font-size:14px; font-weight:800; color:#d9b5ff; margin:0 0 24px; line-height:1.7;">
+        點擊按鈕挑戰團隊開發的【防詐騙實戰挑戰賽】！<br>
+        在真實情境模擬中，你能識破詐騙套路嗎？
       </p>
-    </footer>
+      <a href="./my-game.html" class="btn-cta">🕹️ 進入防詐騙實戰挑戰賽 →</a>
+    </div>
 
-  </main>
+  </div>
+  <!-- ══════════ END RESULTS ══════════ -->
 
-  <!-- ════════════════════════ JAVASCRIPT ════════════════════════ -->
-  <script>
-    // MAX_SCORE: 35 + (30+20) + (30+15) + 35 + 30 = 195
-    const MAX_SCORE = 195;
+  <footer style="margin-top:40px; padding-top:20px;
+                 border-top:3px solid rgba(255,255,255,0.12); text-align:center;">
+    <p style="color:#9b7dd4; font-size:12px; font-weight:700; line-height:1.9; margin:0;">
+      資料參考：165 全民防騙網 ｜ 內政部警政署刑事局<br>
+      本工具僅供大學通識課程教育使用，非正式法律或金融建議
+    </p>
+  </footer>
 
-    function calculateRisk() {
-      let score = 0;
+</main>
 
-      // 指標 1 – radio
-      const i1 = document.querySelector('input[name="ind1"]:checked');
-      if (i1) score += parseInt(i1.value, 10);
+<!-- ══════════ JAVASCRIPT ══════════ -->
+<script>
+  // 最高分 = 35 + (30+20) + (30+15) + 35 + 30 = 195
+  const MAX_SCORE = 195;
 
-      // 指標 2 – checkboxes
-      document.querySelectorAll('input[name="ind2"]:checked').forEach(cb => {
-        score += parseInt(cb.value, 10);
-      });
+  function calculateRisk() {
+    let score = 0;
 
-      // 指標 3 – checkboxes
-      document.querySelectorAll('input[name="ind3"]:checked').forEach(cb => {
-        score += parseInt(cb.value, 10);
-      });
+    const i1 = document.querySelector('input[name="ind1"]:checked');
+    if (i1) score += parseInt(i1.value, 10);
 
-      // 指標 4 – radio
-      const i4 = document.querySelector('input[name="ind4"]:checked');
-      if (i4) score += parseInt(i4.value, 10);
+    document.querySelectorAll('input[name="ind2"]:checked').forEach(cb => {
+      score += parseInt(cb.value, 10);
+    });
 
-      // 指標 5 – radio
-      const i5 = document.querySelector('input[name="ind5"]:checked');
-      if (i5) score += parseInt(i5.value, 10);
+    document.querySelectorAll('input[name="ind3"]:checked').forEach(cb => {
+      score += parseInt(cb.value, 10);
+    });
 
-      const pct = Math.min(100, Math.round((score / MAX_SCORE) * 100));
-      updateUI(score, pct);
-      refreshCardStyles();
+    const i4 = document.querySelector('input[name="ind4"]:checked');
+    if (i4) score += parseInt(i4.value, 10);
+
+    const i5 = document.querySelector('input[name="ind5"]:checked');
+    if (i5) score += parseInt(i5.value, 10);
+
+    const pct = Math.min(100, Math.round((score / MAX_SCORE) * 100));
+    updateUI(score, pct);
+    refreshCardStyles();
+  }
+
+  function updateUI(score, pct) {
+    const bar    = document.getElementById('progressBar');
+    const pctTxt = document.getElementById('percentText');
+    const rawTxt = document.getElementById('rawScore');
+    const status = document.getElementById('statusMessage');
+    const alert  = document.getElementById('alertCard');
+
+    pctTxt.textContent = pct + '%';
+    rawTxt.textContent = `(${score} / ${MAX_SCORE})`;
+    bar.style.width = pct + '%';
+    bar.classList.remove('animate-pulse');
+
+    if (pct <= 30) {
+      bar.style.background = '#b5f39a';
+      status.className = 'status-msg s-safe';
+      status.innerHTML =
+        '<strong>🟢 安全系數高。</strong>' +
+        ' 但匯款前仍請再次核對對方身分與帳號是否正確。';
+      alert.classList.add('hidden');
+
+    } else if (pct <= 65) {
+      bar.style.background = '#f4e27a';
+      status.className = 'status-msg s-mid';
+      status.innerHTML =
+        '<strong>🟡 中度風險警報！</strong>' +
+        ' 這符合近年常見的網購、二手拍賣或三方詐騙特徵，建議暫停匯款，先透過官方管道查證。';
+      alert.classList.add('hidden');
+
+    } else {
+      bar.style.background = '#ff6b6b';
+      bar.classList.add('animate-pulse');
+      status.className = 'status-msg s-danger';
+      status.innerHTML =
+        '<strong>🔴 偵測到極高風險特徵組合！</strong>' +
+        ' 詳見下方紅色警告卡片。';
+      alert.classList.remove('hidden');
+      setTimeout(() => alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
     }
+  }
 
-    function updateUI(score, pct) {
-      const bar         = document.getElementById('progressBar');
-      const percentText = document.getElementById('percentText');
-      const rawScore    = document.getElementById('rawScore');
-      const status      = document.getElementById('statusMessage');
-      const alertCard   = document.getElementById('alertCard');
-
-      percentText.textContent = pct + '%';
-      rawScore.textContent    = `(${score} / ${MAX_SCORE})`;
-      bar.style.width         = pct + '%';
-
-      // Reset animate-pulse from a previous high-risk state
-      bar.classList.remove('animate-pulse');
-
-      if (pct <= 30) {
-        // ── 🟢 Safe ──
-        bar.style.background  = 'linear-gradient(90deg, #15803d, #22c55e, #4ade80)';
-        bar.style.boxShadow   = '0 0 14px rgba(34, 197, 94, 0.65)';
-        status.className      = 'p-4 bg-green-950/35 rounded-xl border border-green-500/30 text-center text-sm leading-relaxed';
-        status.innerHTML      =
-          '<span class="text-green-400 font-semibold">🟢 安全系數高。</span>' +
-          '<span class="text-slate-400"> 但匯款前仍請再次核對對方身分與帳號是否正確。</span>';
-        alertCard.classList.add('hidden');
-
-      } else if (pct <= 65) {
-        // ── 🟡 Medium risk ──
-        bar.style.background  = 'linear-gradient(90deg, #a16207, #eab308, #fde047)';
-        bar.style.boxShadow   = '0 0 14px rgba(234, 179, 8, 0.65)';
-        status.className      = 'p-4 bg-yellow-950/35 rounded-xl border border-yellow-500/30 text-center text-sm leading-relaxed';
-        status.innerHTML      =
-          '<span class="text-yellow-400 font-semibold">🟡 中度風險警報！</span>' +
-          '<span class="text-slate-400"> 這符合近年常見的網購、二手拍賣或三方詐騙特徵，建議暫停匯款，先透過官方管道查證。</span>';
-        alertCard.classList.add('hidden');
-
-      } else {
-        // ── 🔴 Extreme risk ──
-        bar.style.background  = 'linear-gradient(90deg, #991b1b, #ef4444, #fca5a5)';
-        bar.style.boxShadow   = '0 0 18px rgba(239, 68, 68, 0.85)';
-        bar.classList.add('animate-pulse');
-        status.className      = 'p-4 bg-red-950/35 rounded-xl border border-red-500/30 text-center text-sm leading-relaxed';
-        status.innerHTML      =
-          '<span class="text-red-400 font-bold">🔴 偵測到極高風險特徵組合！</span>' +
-          '<span class="text-slate-400"> 詳見下方紅色警告卡片。</span>';
-        alertCard.classList.remove('hidden');
-        // Smooth scroll to alert
-        setTimeout(() => alertCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
-      }
-    }
-
-    function refreshCardStyles() {
-      document.querySelectorAll('.option-card').forEach(card => {
-        const input = card.querySelector('input');
-        if (input && input.checked) {
-          card.classList.add('selected');
-        } else {
-          card.classList.remove('selected');
-        }
-      });
-    }
-  </script>
+  function refreshCardStyles() {
+    document.querySelectorAll('.option-card').forEach(card => {
+      const input = card.querySelector('input');
+      card.classList.toggle('selected', !!(input && input.checked));
+    });
+  }
+</script>
 </body>
 </html>
