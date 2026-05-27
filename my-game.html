@@ -1047,6 +1047,358 @@ button, a {
         grid-template-columns: repeat(2, minmax(140px, 1fr));
     }
 }
+
+/* ── Mobile: 768px ── */
+@media (max-width: 768px) {
+
+    /* Start screen */
+    .start-card {
+        padding: 22px 18px;
+    }
+    .start-content h1 {
+        font-size: 30px;
+    }
+    .start-content p {
+        font-size: 16px;
+    }
+    .mode-btn {
+        font-size: 21px;
+        padding: 18px 14px;
+        box-shadow: 5px 5px 0 #111;
+    }
+    .mode-btn:hover {
+        box-shadow: 8px 8px 0 #111;
+    }
+    .back-home {
+        font-size: 17px;
+    }
+
+    /* Top panel */
+    .top-panel {
+        padding: 14px 14px 0;
+    }
+    .title-box {
+        padding: 10px 16px;
+    }
+    .title-box h2 {
+        font-size: 22px;
+    }
+    .title-box p {
+        font-size: 14px;
+    }
+    .status-box {
+        font-size: 15px;
+        padding: 10px 14px;
+        gap: 6px 14px;
+        grid-template-columns: repeat(2, auto);
+    }
+
+    /* SMS scene layout */
+    .sms-scene {
+        padding: 14px 14px 28px;
+        gap: 14px;
+    }
+
+    /* Phone area: scale down decorative elements to fit mobile width */
+    .phone-area {
+        min-height: 330px;
+        overflow: hidden;
+    }
+    .big-phone {
+        width: 175px;
+        height: 304px;
+        left: 2%;
+        top: 8px;
+    }
+    .big-phone::before {
+        font-size: 14px;
+        top: 10px;
+        left: 16px;
+    }
+    .phone-screen {
+        inset: 32px 13px 19px;
+    }
+    .sms-visual-card {
+        left: 50px;
+        top: 28px;
+        width: 185px;
+        height: 128px;
+    }
+    .sms-icon {
+        font-size: 56px;
+    }
+    /* Scale demon in-place (absolutely positioned, scale doesn't affect layout flow) */
+    .sms-demon {
+        right: 10px;
+        top: -5px;
+        transform: scale(0.65);
+        transform-origin: top right;
+    }
+    .fake-keyboard {
+        left: 68px;
+        top: 192px;
+        width: 210px;
+        height: 92px;
+        padding: 12px;
+        gap: 6px;
+    }
+    .sms-note {
+        width: 100%;
+        left: 0;
+        right: 0;
+        font-size: 20px;
+        padding: 14px 16px;
+        line-height: 1.35;
+    }
+    .sms-note span {
+        font-size: 28px;
+    }
+
+    /* Speech bubble & choices */
+    .speech {
+        font-size: 18px;
+        padding: 16px 20px;
+        min-height: 110px;
+        margin-bottom: 22px;
+    }
+    .choice-box {
+        padding: 18px;
+        gap: 12px;
+        min-height: 160px;
+    }
+    .choice {
+        font-size: 18px;
+        min-height: 100px;
+        padding: 12px;
+        border-width: 4px;
+        box-shadow: 4px 4px 0 #111;
+    }
+    .choice:hover {
+        box-shadow: 7px 7px 0 #111;
+    }
+    .chat-top {
+        height: 46px;
+        font-size: 22px;
+    }
+    .chat-bottom {
+        height: 50px;
+    }
+    .small-key {
+        width: 44px;
+        height: 34px;
+        font-size: 18px;
+    }
+
+    /* Card scene */
+    .card-scene {
+        padding: 14px 14px 36px;
+        gap: 14px;
+    }
+    .card-tip-card {
+        font-size: 20px;
+    }
+    .card-tip-card span {
+        font-size: 28px;
+    }
+    .card-board {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .memory-card {
+        height: 140px;
+    }
+    .memory-icon {
+        font-size: 40px;
+    }
+    .memory-label {
+        font-size: 15px;
+        min-height: 42px;
+    }
+
+    /* Modal */
+    .modal-content {
+        padding: 22px 18px;
+    }
+    .modal-emoji {
+        font-size: 60px;
+    }
+    .modal-content h2 {
+        font-size: 28px;
+    }
+    .modal-content p {
+        font-size: 17px;
+    }
+    .warning-large {
+        font-size: 20px;
+        margin-top: 12px;
+    }
+    .final-money {
+        font-size: 26px;
+    }
+    .modal-buttons {
+        gap: 12px;
+    }
+    .modal-buttons button,
+    .modal-buttons a {
+        font-size: 17px;
+        padding: 10px 18px;
+        box-shadow: 4px 4px 0 #111;
+    }
+}
+
+/* ── Small phone: 420px ── */
+@media (max-width: 420px) {
+
+    /* Start screen */
+    .start-card {
+        padding: 18px 14px;
+    }
+    .start-content h1 {
+        font-size: 24px;
+    }
+    .start-content p {
+        font-size: 14px;
+    }
+    .mode-btn {
+        font-size: 18px;
+        padding: 14px 12px;
+    }
+
+    /* Top panel */
+    .title-box h2 {
+        font-size: 17px;
+    }
+    .title-box p {
+        font-size: 13px;
+    }
+    .status-box {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+
+    /* Phone area */
+    .phone-area {
+        min-height: 270px;
+    }
+    .big-phone {
+        width: 138px;
+        height: 240px;
+    }
+    .big-phone::before {
+        font-size: 12px;
+        top: 8px;
+        left: 12px;
+    }
+    .phone-screen {
+        inset: 25px 10px 15px;
+    }
+    .sms-visual-card {
+        left: 38px;
+        top: 22px;
+        width: 148px;
+        height: 102px;
+    }
+    .sms-icon {
+        font-size: 44px;
+    }
+    .sms-demon {
+        right: 6px;
+        top: -8px;
+        transform: scale(0.52);
+    }
+    .fake-keyboard {
+        left: 50px;
+        top: 152px;
+        width: 172px;
+        height: 78px;
+        padding: 9px;
+        gap: 5px;
+        grid-template-columns: repeat(6, 1fr);
+    }
+    .sms-note {
+        font-size: 17px;
+        padding: 12px 14px;
+    }
+    .sms-note span {
+        font-size: 24px;
+    }
+
+    /* Speech & choices */
+    .speech {
+        font-size: 16px;
+        padding: 14px 16px;
+        min-height: 100px;
+    }
+    .choice {
+        font-size: 16px;
+        min-height: 84px;
+        padding: 10px;
+    }
+    .choice-box {
+        padding: 14px;
+        gap: 10px;
+        min-height: 130px;
+    }
+    .small-key {
+        width: 36px;
+        height: 28px;
+        font-size: 15px;
+    }
+
+    /* Card scene */
+    .card-scene {
+        padding: 12px 12px 30px;
+    }
+    .card-tip-card {
+        font-size: 17px;
+    }
+    .card-tip-card span {
+        font-size: 24px;
+    }
+    .card-board {
+        gap: 8px;
+    }
+    .memory-card {
+        height: 120px;
+    }
+    .memory-icon {
+        font-size: 32px;
+    }
+    .memory-label {
+        font-size: 13px;
+        min-height: 36px;
+        padding: 4px;
+    }
+
+    /* Modal */
+    .modal-content {
+        padding: 18px 14px;
+    }
+    .modal-emoji {
+        font-size: 48px;
+    }
+    .modal-content h2 {
+        font-size: 22px;
+    }
+    .modal-content p {
+        font-size: 15px;
+    }
+    .warning-large {
+        font-size: 17px;
+    }
+    .final-money {
+        font-size: 22px;
+    }
+    .modal-buttons {
+        gap: 8px;
+    }
+    .modal-buttons button,
+    .modal-buttons a {
+        font-size: 15px;
+        padding: 8px 14px;
+        box-shadow: 3px 3px 0 #111;
+    }
+}
 </style>
 </head>
 
