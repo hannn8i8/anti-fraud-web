@@ -1,5 +1,5 @@
 {
-  "_說明": "詐騙網址黑名單。pattern=網址特徵(會用「包含」比對)，category=詐騙類型，severity=嚴重度(high/medium)，note=給人看的說明。網站與 LINE Bot 共用同一份格式；functions/data/bad_urls.json 是 Bot 部署用的副本，更新時請兩邊一起改。",
+  "_說明": "詐騙網址黑名單。pattern=網址特徵(會用「包含」比對)，category=詐騙類型，severity=嚴重度(high/medium)，note=給人看的說明。新增時照同樣格式加一筆即可。",
   "list": [
     {
       "pattern": "bank-tw-secure.com",
