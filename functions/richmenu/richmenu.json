@@ -1,0 +1,39 @@
+{
+  "_說明": "Rich Menu（圖文選單）設定。版面 2500x1686，分成 2 列 x 3 欄，共 6 格。風險自測請把 YOUR_LIFF_ID 換成你的 LIFF ID（或讓 setup-richmenu.js 從環境變數 LIFF_ID 自動帶入）。",
+  "size": { "width": 2500, "height": 1686 },
+  "selected": true,
+  "name": "防詐小幫手選單",
+  "chatBarText": "防詐選單",
+  "areas": [
+    {
+      "_格子": "左上：查訊息",
+      "bounds": { "x": 0, "y": 0, "width": 834, "height": 843 },
+      "action": { "type": "postback", "data": "action=help_msg", "displayText": "我要查可疑訊息" }
+    },
+    {
+      "_格子": "中上：查網址",
+      "bounds": { "x": 834, "y": 0, "width": 833, "height": 843 },
+      "action": { "type": "postback", "data": "action=help_url", "displayText": "我要查可疑網址" }
+    },
+    {
+      "_格子": "右上：風險自測（LIFF）",
+      "bounds": { "x": 1667, "y": 0, "width": 833, "height": 843 },
+      "action": { "type": "uri", "label": "風險自測", "uri": "https://liff.line.me/YOUR_LIFF_ID" }
+    },
+    {
+      "_格子": "左下：防詐遊戲",
+      "bounds": { "x": 0, "y": 843, "width": 834, "height": 843 },
+      "action": { "type": "uri", "label": "防詐遊戲", "uri": "https://anti-fraud-web.web.app/my-game.html" }
+    },
+    {
+      "_格子": "中下：撥打165",
+      "bounds": { "x": 834, "y": 843, "width": 833, "height": 843 },
+      "action": { "type": "uri", "label": "撥打165", "uri": "tel:165" }
+    },
+    {
+      "_格子": "右下：詐騙案例",
+      "bounds": { "x": 1667, "y": 843, "width": 833, "height": 843 },
+      "action": { "type": "postback", "data": "action=cases", "displayText": "看常見詐騙案例" }
+    }
+  ]
+}

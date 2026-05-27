@@ -1,0 +1,10 @@
+# 機密金鑰，絕對不要上傳
+.env
+
+# 套件資料夾
+node_modules/
+
+# Firebase 除錯與快取
+*.log
+.firebase/
+.runtimeconfig.json
